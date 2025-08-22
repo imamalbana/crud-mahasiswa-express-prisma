@@ -1,62 +1,92 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+// Helper random nama mahasiswa
+function randomName() {
+  const firstNames = [
+    "Budi",
+    "Siti",
+    "Agus",
+    "Rina",
+    "Dewi",
+    "Andi",
+    "Rudi",
+    "Ayu",
+    "Hendra",
+    "Tina",
+  ];
+  const lastNames = [
+    "Santoso",
+    "Aminah",
+    "Wijaya",
+    "Putra",
+    "Pratama",
+    "Sukarno",
+    "Halim",
+    "Lestari",
+  ];
+  const first = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const last = lastNames[Math.floor(Math.random() * lastNames.length)];
+  return `${first} ${last}`;
+}
+
+// Helper random NIM
+function randomNim(index) {
+  return `M${index.toString().padStart(3, "0")}`; // M001, M002, dst
+}
+
 async function main() {
-  console.log("Seeding data...");
+  // Bersihkan data lama + reset auto increment
+  await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 0`);
+  await prisma.$executeRawUnsafe(`TRUNCATE TABLE mahasiswa`);
+  await prisma.$executeRawUnsafe(`TRUNCATE TABLE jurusan`);
+  await prisma.$executeRawUnsafe(`TRUNCATE TABLE fakultas`);
+  await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 1`);
 
-  // Fakultas
-  const fakultasTeknik = await prisma.fakultas.upsert({
-    where: { nama: "Teknik" },
-    update: {},
-    create: { nama: "Teknik" },
+  // Buat Fakultas
+  await prisma.fakultas.createMany({
+    data: [
+      { nama: "Fakultas Teknik" },
+      { nama: "Fakultas Ekonomi" },
+      { nama: "Fakultas Kedokteran" },
+    ],
   });
 
-  const fakultasEkonomi = await prisma.fakultas.upsert({
-    where: { nama: "Ekonomi" },
-    update: {},
-    create: { nama: "Ekonomi" },
-  });
+  const allFakultas = await prisma.fakultas.findMany();
 
-  // Jurusan
-  const jurusanInformatika = await prisma.jurusan.upsert({
-    where: { nama: "Informatika" },
-    update: {},
-    create: { nama: "Informatika", fakultasId: fakultasTeknik.id },
-  });
+  // Buat Jurusan
+  const jurusanData = [
+    { nama: "Teknik Informatika", fakultasId: allFakultas[0].id },
+    { nama: "Sistem Informasi", fakultasId: allFakultas[0].id },
+    { nama: "Manajemen", fakultasId: allFakultas[1].id },
+    { nama: "Akuntansi", fakultasId: allFakultas[1].id },
+    { nama: "Kedokteran Umum", fakultasId: allFakultas[2].id },
+    { nama: "Kedokteran Gigi", fakultasId: allFakultas[2].id },
+  ];
 
-  const jurusanAkuntansi = await prisma.jurusan.upsert({
-    where: { nama: "Akuntansi" },
-    update: {},
-    create: { nama: "Akuntansi", fakultasId: fakultasEkonomi.id },
-  });
+  await prisma.jurusan.createMany({ data: jurusanData });
 
-  // Mahasiswa
-  await prisma.mahasiswa.upsert({
-    where: { nim: "M001" },
-    update: {},
-    create: {
-      nama: "Budi Santoso",
-      nim: "M001",
-      jurusanId: jurusanInformatika.id,
-    },
-  });
+  const allJurusan = await prisma.jurusan.findMany();
 
-  await prisma.mahasiswa.upsert({
-    where: { nim: "M002" },
-    update: {},
-    create: {
-      nama: "Siti Aminah",
-      nim: "M002",
-      jurusanId: jurusanAkuntansi.id,
-    },
-  });
+  // Buat 50 Mahasiswa random
+  const mahasiswaData = [];
+  for (let i = 1; i <= 50; i++) {
+    const jurusan = allJurusan[Math.floor(Math.random() * allJurusan.length)];
+    mahasiswaData.push({
+      nama: randomName(),
+      nim: randomNim(i),
+      jurusanId: jurusan.id,
+    });
+  }
 
-  console.log("Seeding finished!");
+  await prisma.mahasiswa.createMany({ data: mahasiswaData });
+
+  console.log("✅ Seeding 50 mahasiswa selesai!");
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("❌ Error seeding:", e);
     process.exit(1);
   })
   .finally(async () => {
