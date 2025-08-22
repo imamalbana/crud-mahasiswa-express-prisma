@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,7 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int    @id @default(autoincrement())
-  name  String
+model Fakultas {
+  id      Int       @id @default(autoincrement())
+  nama    String    @unique
+  jurusan Jurusan[]
+}
+
+model Jurusan {
+  id         Int       @id @default(autoincrement())
+  nama       String    @unique
+  fakultasId Int
+  fakultas   Fakultas  @relation(fields: [fakultasId], references: [id])
+  mahasiswa  Mahasiswa[]
+}
+
+model Mahasiswa {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  nim       String   @unique
+  jurusanId Int
+  jurusan   Jurusan  @relation(fields: [jurusanId], references: [id])
 }
