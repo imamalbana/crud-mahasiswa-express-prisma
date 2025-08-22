@@ -4,5 +4,6 @@ const mahasiswaController = require("../controllers/mahasiswaController");
 
 router.get("/", mahasiswaController.getAllMahasiswa);
 router.post("/", mahasiswaController.createMahasiswa);
+router.put("/:id", mahasiswaController.updateMahasiswa);
 
 module.exports = router;

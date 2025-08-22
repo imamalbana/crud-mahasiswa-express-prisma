@@ -40,7 +40,43 @@ const createMahasiswa = async ({ nama, nim, jurusanId }) => {
   return mahasiswa;
 };
 
+const updateMahasiswa = async (id, { nama, nim, jurusanId }) => {
+  if (!nama || !nim || !jurusanId) {
+    throw new Error("Nama, NIM, dan Jurusan tidak boleh kosong");
+  }
+  const user = await prisma.mahasiswa.findUnique({
+    where: { id },
+  });
+  if (!user) {
+    throw new Error("Mahasiswa tidak di temukan");
+  }
+
+  const mahasiswa = await prisma.mahasiswa.update({
+    where: { id },
+    data: {
+      ...(nim && { nim }),
+      ...(nama && { nama }),
+      ...(jurusanId && {
+        jurusan: {
+          connect: {
+            id: jurusanId,
+          },
+        },
+      }),
+    },
+    include: {
+      jurusan: {
+        include: {
+          fakultas: true,
+        },
+      },
+    },
+  });
+  return mahasiswa;
+};
+
 module.exports = {
   getAllMahasiswa,
   createMahasiswa,
+  updateMahasiswa,
 };

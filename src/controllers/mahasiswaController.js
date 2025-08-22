@@ -38,7 +38,30 @@ const createMahasiswa = async (req, res) => {
   }
 };
 
+const updateMahasiswa = async (req, res) => {
+  try {
+    const { nama, nim, jurusanId } = req.body;
+    const { id } = req.params;
+    const mahasiswa = await mahasiswaService.updateMahasiswa(Number(id), {
+      nama,
+      nim,
+      jurusanId,
+    });
+    res.json({
+      status: "success",
+      message: "Update mahasiswa berhasil",
+      data: mahasiswa,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getAllMahasiswa,
-  createMahasiswa, // eksport sebagai objek
+  createMahasiswa,
+  updateMahasiswa, // eksport sebagai objek
 };
