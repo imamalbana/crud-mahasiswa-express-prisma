@@ -1,16 +1,36 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getAllMahasiswa = async () => {
-  return await prisma.mahasiswa.findMany({
-    include: {
-      jurusan: {
-        include: {
-          fakultas: true,
+const getAllMahasiswa = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    prisma.mahasiswa.findMany({
+      skip,
+      take: limit,
+      include: {
+        jurusan: {
+          include: {
+            fakultas: true,
+          },
         },
       },
+      orderBy: {
+        id: "asc", // biasanya data terbaru di atas
+      },
+    }),
+    prisma.mahasiswa.count(),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
-  });
+  };
 };
 
 const createMahasiswa = async ({ nama, nim, jurusanId }) => {
@@ -75,8 +95,21 @@ const updateMahasiswa = async (id, { nama, nim, jurusanId }) => {
   return mahasiswa;
 };
 
+const deleteMahasiswa = async (id) => {
+  const user = await prisma.mahasiswa.findUnique({
+    where: { id },
+  });
+  if (!user) {
+    throw new Error(`Mahasiswa dengan ID = ${id} tidak di temukan`);
+  }
+  const mahasiswa = await prisma.mahasiswa.delete({
+    where: { id },
+  });
+};
+
 module.exports = {
   getAllMahasiswa,
   createMahasiswa,
   updateMahasiswa,
+  deleteMahasiswa,
 };
