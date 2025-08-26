@@ -48,7 +48,28 @@ const createJurusan = async ({ nama, fakultasId }) => {
   return jurusan;
 };
 
-const updateJurusan = async () => {};
+const updateJurusan = async (id, { nama, fakultasId }) => {
+  if (!nama && !fakultasId) {
+    throw new Error("Tidak ada data yang bisa di update");
+  }
+  const findFakultas = await prisma.fakultas.findUnique({
+    where: { id },
+  });
+  if (!findFakultas) {
+    throw new Error("Fakultas tidak di temukan");
+  }
+  const jurusan = await prisma.jurusan.update({
+    where: { id },
+    data: {
+      ...(nama && { nama }),
+      ...(fakultasId && { fakultas: { connect: { id: fakultasId } } }),
+    },
+    include: {
+      fakultas: true,
+    },
+  });
+  return jurusan;
+};
 
 const deleteJurusan = async (id) => {
   const findJurusan = await prisma.jurusan.findUnique({
@@ -77,4 +98,5 @@ module.exports = {
   getJurusanById,
   createJurusan,
   deleteJurusan,
+  updateJurusan,
 };

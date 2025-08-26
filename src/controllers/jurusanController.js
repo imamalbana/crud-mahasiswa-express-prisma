@@ -53,7 +53,26 @@ const createJurusan = async (req, res) => {
   }
 };
 
-const updateJurusan = async () => {};
+const updateJurusan = async (req, res) => {
+  try {
+    const { nama, fakultasId } = req.body;
+    const { id } = req.params;
+    const jurusan = await jurusanService.updateJurusan(Number(id), {
+      nama,
+      fakultasId,
+    });
+    res.json({
+      status: "success",
+      message: "data updated succesfully",
+      data: jurusan,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
 
 const deleteJurusan = async (req, res) => {
   try {
@@ -77,4 +96,5 @@ module.exports = {
   getJurusanById,
   createJurusan,
   deleteJurusan,
+  updateJurusan,
 };
