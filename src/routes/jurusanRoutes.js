@@ -4,5 +4,7 @@ const jurusanController = require("../controllers/jurusanController");
 
 router.get("/", jurusanController.getAllJurusan);
 router.get("/:id", jurusanController.getJurusanById);
+router.post("/", jurusanController.createJurusan);
+router.delete("/:id", jurusanController.deleteJurusan);
 
 module.exports = router;

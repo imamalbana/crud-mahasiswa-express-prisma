@@ -33,7 +33,48 @@ const getJurusanById = async (req, res) => {
   }
 };
 
+const createJurusan = async (req, res) => {
+  try {
+    const { nama, fakultasId } = req.body;
+    const jurusan = await jurusanService.createJurusan({
+      nama,
+      fakultasId,
+    });
+    res.json({
+      status: "success",
+      message: "Berhasil menambahkan data jurusan",
+      data: jurusan,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
+
+const updateJurusan = async () => {};
+
+const deleteJurusan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const jurusan = await jurusanService.deleteJurusan(Number(id));
+    res.json({
+      status: "success",
+      message: "Jurusan berhasil di hapus",
+      data: jurusan,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getAllJurusan,
   getJurusanById,
+  createJurusan,
+  deleteJurusan,
 };
