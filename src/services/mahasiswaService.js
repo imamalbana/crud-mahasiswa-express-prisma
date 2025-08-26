@@ -81,8 +81,8 @@ const createMahasiswa = async ({ nama, nim, jurusanId }) => {
 };
 
 const updateMahasiswa = async (id, { nama, nim, jurusanId }) => {
-  if (!nama || !nim || !jurusanId) {
-    throw new Error("Nama, NIM, dan Jurusan tidak boleh kosong");
+  if (!nama && !nim && !jurusanId) {
+    throw new Error("Tidak ada data untuk diupdate");
   }
   const user = await prisma.mahasiswa.findUnique({
     where: { id },
