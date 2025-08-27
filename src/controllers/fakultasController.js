@@ -80,7 +80,19 @@ const updateFakultas = async (req, res) => {
 };
 const deleteFakultas = async (req, res) => {
   try {
-  } catch (err) {}
+    const { id } = req.params;
+    const fakultas = await fakultasService.deleteFakultas(Number(id));
+    res.json({
+      status: "success",
+      message: "data deleted succesfully",
+      data: fakultas,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
 };
 
 module.exports = {

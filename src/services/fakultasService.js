@@ -15,8 +15,9 @@ const getFakultasById = async (id) => {
   }
   return fakultas;
 };
+
 const createFakultas = async (data) => {
-  if (!data.nama) {
+  if (!data.nama || !data.nama.trim()) {
     throw new Error("Silahkan isi nama fakultas");
   }
   const fakultas = await prisma.fakultas.create({
@@ -24,8 +25,9 @@ const createFakultas = async (data) => {
   });
   return fakultas;
 };
+
 const updateFakultas = async (id, data) => {
-  if (!data.nama) {
+  if (!data.nama || !data.nama.trim()) {
     throw new Error("tidak ada data yang di update");
   }
   const findFakultas = await prisma.fakultas.findUnique({
@@ -41,13 +43,29 @@ const updateFakultas = async (id, data) => {
   });
   return fakultas;
 };
-const deleteFakultas = async () => {};
+
+const deleteFakultas = async (id) => {
+  const findFakultas = await prisma.fakultas.findUnique({ where: { id } });
+  if (!findFakultas) {
+    throw new Error(`Fakultas dengan id ${id} tidak di temukan`);
+  }
+  const relatedFakultas = await prisma.jurusan.count({
+    where: { fakultasId: id },
+  });
+  if (relatedFakultas > 0) {
+    throw new Error(`Fakultas dengan id ${id} dipakai di jurusan`);
+  }
+
+  const fakultas = await prisma.fakultas.delete({
+    where: { id },
+  });
+  return fakultas;
+};
 
 module.exports = {
   getAllFakultas,
   getFakultasById,
   updateFakultas,
   createFakultas,
-  updateFakultas,
   deleteFakultas,
 };
