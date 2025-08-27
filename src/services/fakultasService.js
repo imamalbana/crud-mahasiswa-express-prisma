@@ -1,14 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { paginate } = require("../utils/paginate");
 
-const getAllFakultas = async () => {
-  const fakultas = await prisma.fakultas.findMany({
-    orderBy: {
-      id: "desc",
-    },
-  });
-  return fakultas;
+const getAllFakultas = async (params) => {
+  return paginate(prisma.fakultas, params);
 };
+
 const getFakultasById = async (id) => {
   const fakultas = await prisma.fakultas.findUnique({
     where: { id },

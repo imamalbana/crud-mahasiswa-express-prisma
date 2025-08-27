@@ -2,11 +2,21 @@ const fakultasService = require("../services/fakultasService");
 
 const getAllFakultas = async (req, res) => {
   try {
-    const fakultas = await fakultasService.getAllFakultas();
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
+    const sortBy = req.query.sortBy;
+    const order = req.query.order;
+
+    const result = await fakultasService.getAllFakultas({
+      page,
+      limit,
+      sortBy,
+      order,
+    });
     res.json({
       status: "success",
       message: "Berhasil menampilkan semua data fakultas",
-      data: fakultas,
+      ...result,
     });
   } catch (err) {
     res.status(500).json({

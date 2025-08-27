@@ -3,10 +3,17 @@ const mahasiswaService = require("../services/mahasiswaService");
 // Function untuk menampilkan semua mahasiswa
 const getAllMahasiswa = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
+    const sortBy = req.query.sortBy;
+    const order = req.query.order;
 
-    const result = await mahasiswaService.getAllMahasiswa(page, limit);
+    const result = await mahasiswaService.getAllMahasiswa({
+      page,
+      limit,
+      sortBy,
+      order,
+    });
 
     res.json({
       status: "success",

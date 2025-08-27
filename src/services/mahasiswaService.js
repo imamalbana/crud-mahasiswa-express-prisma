@@ -1,36 +1,18 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { paginate } = require("../utils/paginate");
 
-const getAllMahasiswa = async (page = 1, limit = 10) => {
-  const skip = (page - 1) * limit;
-
-  const [data, total] = await Promise.all([
-    prisma.mahasiswa.findMany({
-      skip,
-      take: limit,
-      include: {
-        jurusan: {
-          include: {
-            fakultas: true,
-          },
+const getAllMahasiswa = async (params) => {
+  return paginate(prisma.mahasiswa, {
+    ...params,
+    include: {
+      jurusan: {
+        include: {
+          fakultas: true,
         },
       },
-      orderBy: {
-        id: "asc", // biasanya data terbaru di atas
-      },
-    }),
-    prisma.mahasiswa.count(),
-  ]);
-
-  return {
-    data,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
     },
-  };
+  });
 };
 
 const getMahasiswaById = async (id) => {

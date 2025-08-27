@@ -1,13 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { paginate } = require("../utils/paginate");
 
-const getAllJurusan = async () => {
-  const jurusan = await prisma.jurusan.findMany({
-    include: {
-      fakultas: true,
-    },
-  });
-  return jurusan;
+const getAllJurusan = async (params) => {
+  return paginate(prisma.jurusan, params);
 };
 
 const getJurusanById = async (id) => {
