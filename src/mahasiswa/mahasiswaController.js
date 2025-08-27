@@ -1,4 +1,4 @@
-const mahasiswaService = require("../services/mahasiswaService");
+const mahasiswaService = require("./mahasiswaService");
 
 // Function untuk menampilkan semua mahasiswa
 const getAllMahasiswa = async (req, res) => {

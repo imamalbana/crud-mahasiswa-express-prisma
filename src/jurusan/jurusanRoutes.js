@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const jurusanController = require("../controllers/jurusanController");
+const jurusanController = require("./jurusanController");
 
 router.get("/", jurusanController.getAllJurusan);
 router.get("/:id", jurusanController.getJurusanById);

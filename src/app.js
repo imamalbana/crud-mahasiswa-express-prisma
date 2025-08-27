@@ -1,12 +1,11 @@
 const express = require("express");
 const app = express();
-const mahasiswaRoutes = require("./routes/mahasiswaRoutes");
-const jurusanRoutes = require("./routes/jurusanRoutes");
-const fakultasRoutes = require("./routes/fakultasRoutes");
+const mahasiswaRoutes = require("./mahasiswa/mahasiswaRoutes");
+const jurusanRoutes = require("./jurusan/jurusanRoutes");
+const fakultasRoutes = require("./fakultas/fakultasRoutes");
 
 app.use(express.json());
 
-// Mount route mahasiswa
 app.use("/api/mahasiswa", mahasiswaRoutes);
 app.use("/api/jurusan", jurusanRoutes);
 app.use("/api/fakultas", fakultasRoutes);

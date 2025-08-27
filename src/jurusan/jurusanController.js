@@ -1,13 +1,13 @@
-const fakultasService = require("../services/fakultasService");
+const jurusanService = require("./jurusanService");
 
-const getAllFakultas = async (req, res) => {
+const getAllJurusan = async (req, res) => {
   try {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const sortBy = req.query.sortBy;
     const order = req.query.order;
 
-    const result = await fakultasService.getAllFakultas({
+    const result = await jurusanService.getAllJurusan({
       page,
       limit,
       sortBy,
@@ -15,7 +15,7 @@ const getAllFakultas = async (req, res) => {
     });
     res.json({
       status: "success",
-      message: "Berhasil menampilkan semua data fakultas",
+      message: "berhasil menampilkan semua jurusan",
       ...result,
     });
   } catch (err) {
@@ -25,32 +25,35 @@ const getAllFakultas = async (req, res) => {
     });
   }
 };
-const getFakultasById = async (req, res) => {
+
+const getJurusanById = async (req, res) => {
   try {
     const { id } = req.params;
-    const fakultas = await fakultasService.getFakultasById(Number(id));
+    const jurusan = await jurusanService.getJurusanById(Number(id));
     res.json({
       status: "success",
-      message: `Data dengan id : ${id}`,
-      data: fakultas,
+      message: `Berhasil menampilkan jurusan dengan id = ${id}`,
+      data: jurusan,
     });
   } catch (err) {
     res.status(404).json({
-      status: "not found",
+      status: "error",
       message: err.message,
     });
   }
 };
-const createFakultas = async (req, res) => {
+
+const createJurusan = async (req, res) => {
   try {
-    const { nama } = req.body;
-    const fakultas = await fakultasService.createFakultas({
+    const { nama, fakultasId } = req.body;
+    const jurusan = await jurusanService.createJurusan({
       nama,
+      fakultasId,
     });
     res.json({
       status: "success",
-      message: "berhasil menambahkan data",
-      data: fakultas,
+      message: "Berhasil menambahkan data jurusan",
+      data: jurusan,
     });
   } catch (err) {
     res.status(500).json({
@@ -59,17 +62,19 @@ const createFakultas = async (req, res) => {
     });
   }
 };
-const updateFakultas = async (req, res) => {
+
+const updateJurusan = async (req, res) => {
   try {
+    const { nama, fakultasId } = req.body;
     const { id } = req.params;
-    const { nama } = req.body;
-    const fakultas = await fakultasService.updateFakultas(Number(id), {
+    const jurusan = await jurusanService.updateJurusan(Number(id), {
       nama,
+      fakultasId,
     });
     res.json({
       status: "success",
       message: "data updated succesfully",
-      data: fakultas,
+      data: jurusan,
     });
   } catch (err) {
     res.status(500).json({
@@ -78,14 +83,15 @@ const updateFakultas = async (req, res) => {
     });
   }
 };
-const deleteFakultas = async (req, res) => {
+
+const deleteJurusan = async (req, res) => {
   try {
     const { id } = req.params;
-    const fakultas = await fakultasService.deleteFakultas(Number(id));
+    const jurusan = await jurusanService.deleteJurusan(Number(id));
     res.json({
       status: "success",
-      message: "data deleted succesfully",
-      data: fakultas,
+      message: "Jurusan berhasil di hapus",
+      data: jurusan,
     });
   } catch (err) {
     res.status(500).json({
@@ -96,10 +102,9 @@ const deleteFakultas = async (req, res) => {
 };
 
 module.exports = {
-  getAllFakultas,
-  getFakultasById,
-  updateFakultas,
-  createFakultas,
-  updateFakultas,
-  deleteFakultas,
+  getAllJurusan,
+  getJurusanById,
+  createJurusan,
+  deleteJurusan,
+  updateJurusan,
 };
