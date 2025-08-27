@@ -1,14 +1,18 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { paginate } = require("../utils/paginate");
-
+const jurusanRepo = require("./jurusanRepository");
+const { findOrFail } = require("../shared/utils/helper");
 const getAllJurusan = async (params) => {
-  return paginate(prisma.jurusan, params);
+  return jurusanRepo.getAll({
+    ...params,
+    include: {
+      fakultas: true,
+    },
+  });
 };
 
 const getJurusanById = async (id) => {
-  const jurusan = await prisma.jurusan.findUnique({
-    where: { id },
+  const jurusan = await jurusanRepo.getById(id, {
     include: {
       fakultas: true,
     },
@@ -20,27 +24,25 @@ const getJurusanById = async (id) => {
 };
 
 const createJurusan = async ({ nama, fakultasId }) => {
-  const fakultas = await prisma.fakultas.findUnique({
-    where: {
-      id: fakultasId,
-    },
+  const fakultas = await findOrFail(prisma.fakultas, fakultasId, "Fakultas");
+  const existingJurusan = await prisma.jurusan.findUnique({
+    where: { nama },
   });
-  if (!fakultas) {
-    throw new Error("Fakultas tidak di temukan");
+  if (existingJurusan) {
+    throw new Error(`Jurusan dengan nama "${nama}" sudah ada`);
   }
-  const jurusan = await prisma.jurusan.create({
-    data: {
+
+  const jurusan = await jurusanRepo.create(
+    {
       nama,
-      fakultas: {
-        connect: {
-          id: fakultasId,
-        },
+      fakultas: { connect: { id: fakultasId } },
+    },
+    {
+      include: {
+        fakultas: true,
       },
-    },
-    include: {
-      fakultas: true,
-    },
-  });
+    }
+  );
   return jurusan;
 };
 
@@ -48,22 +50,31 @@ const updateJurusan = async (id, { nama, fakultasId }) => {
   if (!nama && !fakultasId) {
     throw new Error("Tidak ada data yang bisa di update");
   }
-  const findFakultas = await prisma.fakultas.findUnique({
-    where: { id },
-  });
-  if (!findFakultas) {
-    throw new Error("Fakultas tidak di temukan");
-  }
-  const jurusan = await prisma.jurusan.update({
-    where: { id },
-    data: {
+  const findJurusan = await findOrFail(prisma.jurusan, id, "Jurusan");
+  const findFakultas = await findOrFail(
+    prisma.fakultas,
+    fakultasId,
+    "Fakultas"
+  );
+
+  const jurusan = await jurusanRepo.update(
+    id,
+    {
       ...(nama && { nama }),
-      ...(fakultasId && { fakultas: { connect: { id: fakultasId } } }),
+      ...(fakultasId && {
+        fakultas: {
+          connect: {
+            id: fakultasId,
+          },
+        },
+      }),
     },
-    include: {
-      fakultas: true,
-    },
-  });
+    {
+      include: {
+        fakultas: true,
+      },
+    }
+  );
   return jurusan;
 };
 

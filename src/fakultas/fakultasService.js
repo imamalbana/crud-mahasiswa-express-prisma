@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { paginate } = require("../shared/utils/paginate");
 const repo = require("./fakultasRepository");
 
 const getAllFakultas = async (params) => {

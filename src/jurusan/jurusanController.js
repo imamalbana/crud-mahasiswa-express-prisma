@@ -46,10 +46,12 @@ const getJurusanById = async (req, res) => {
 const createJurusan = async (req, res) => {
   try {
     const { nama, fakultasId } = req.body;
+    console.log(req.body);
     const jurusan = await jurusanService.createJurusan({
       nama,
       fakultasId,
     });
+
     res.json({
       status: "success",
       message: "Berhasil menambahkan data jurusan",

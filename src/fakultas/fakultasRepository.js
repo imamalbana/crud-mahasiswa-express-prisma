@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { paginate } = require("../utils/paginate");
+const { paginate } = require("../shared/utils/paginate");
 
 const getAll = async (params) => paginate(prisma.fakultas, params);
 
