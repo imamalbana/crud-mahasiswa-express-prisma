@@ -33,11 +33,40 @@ const getFakultasById = async (req, res) => {
 };
 const createFakultas = async (req, res) => {
   try {
-  } catch (err) {}
+    const { nama } = req.body;
+    const fakultas = await fakultasService.createFakultas({
+      nama,
+    });
+    res.json({
+      status: "success",
+      message: "berhasil menambahkan data",
+      data: fakultas,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
 };
 const updateFakultas = async (req, res) => {
   try {
-  } catch (err) {}
+    const { id } = req.params;
+    const { nama } = req.body;
+    const fakultas = await fakultasService.updateFakultas(Number(id), {
+      nama,
+    });
+    res.json({
+      status: "success",
+      message: "data updated succesfully",
+      data: fakultas,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
 };
 const deleteFakultas = async (req, res) => {
   try {
