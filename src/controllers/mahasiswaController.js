@@ -18,7 +18,7 @@ const getAllMahasiswa = async (req, res) => {
     res.json({
       status: "success",
       message: "Berhasil menampilkan data mahasiswa",
-      ...result, // data + meta
+      ...result,
     });
   } catch (err) {
     res.status(500).json({
